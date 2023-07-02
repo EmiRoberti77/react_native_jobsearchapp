@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import {
   View,
@@ -10,20 +10,40 @@ import {
 
 import { useRouter } from 'expo-router';
 import { COLORS, SIZES } from '../../../constants';
-import useFetch from '../../../hook/useFetch';
+import { fetchData } from '../../../hook/FetchData';
 import styles from './popularjobs.style';
 import EmiPopularJobCard from '../../common/cards/popular/EmiPopularJobCard';
+import { isLoaded } from 'expo-font';
 
 const Popularjobs = () => {
   const router = useRouter();
   console.log('in Popularjobs component');
-  const { data, isLoading, error } = useFetch('search', {
-    query: 'React developer',
-    num_pages: '1',
-  });
+  const [isLoading, setIsLoading] = useState(false);
 
-  console.log('error', error);
-  console.log('data', data.length);
+  //const [error, setError] = useState(null);
+  // const { data, isLoading, error } = useFetch('search', {
+  //   query: 'React developer',
+  //   num_pages: 1,
+  //   page: 1,
+  // });
+
+  const [responseData, setResponseData] = useState([]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const getJobsData = async () => {
+      const data = await fetchData('search', {
+        query: 'React developer',
+        page: 1,
+        num_pages: 1,
+      });
+
+      setResponseData((state) => data);
+      setIsLoading(false);
+    };
+
+    getJobsData();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -35,19 +55,13 @@ const Popularjobs = () => {
       </View>
 
       <View style={styles.cardsContainer}>
-        {isLoading ? (
-          <ActivityIndicator size={'large'} color={COLORS.primary} />
-        ) : error ? (
-          <Text>Something went wrong</Text>
-        ) : (
-          <FlatList
-            data={data}
-            renderItem={({ item }) => <EmiPopularJobCard />}
-            keyExtractor={(item) => item?.job_id}
-            contentContainerStyle={{ columnGap: SIZES.medium }}
-            horizontal
-          />
-        )}
+        <FlatList
+          data={responseData}
+          renderItem={({ item }) => <EmiPopularJobCard item={item} />}
+          keyExtractor={(item) => item?.job_id}
+          contentContainerStyle={{ columnGap: SIZES.medium }}
+          vertical
+        />
       </View>
     </View>
   );
