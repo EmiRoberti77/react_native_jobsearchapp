@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const SUCCESS = 200;
 const useFetch = (endpoint, query) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setErroe] = useState(null);
+  const [error, setError] = useState(null);
+  const [responseStatus, setResponseStatus] = useState(200);
 
   const options = {
     method: 'GET',
@@ -24,12 +26,20 @@ const useFetch = (endpoint, query) => {
       const response = await axios.request(options);
       console.log(response.data.data);
       setData(response.data.data);
+      //console.log(response.data.data);
+      console.log(response.status);
+      setResponseStatus(response.status);
       setIsLoading(false);
     } catch (error) {
       console.error(error);
+      setError(error);
       alert('there is a error loading job search data');
     } finally {
+      if (responseStatus.status === SUCCESS) {
+        error = null;
+      }
       setIsLoading(false);
+      console.log('error value in fetchData', error);
     }
   };
 
