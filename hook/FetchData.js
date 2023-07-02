@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { RAPID_API_KEY } from './key';
 
 export const fetchData = async (searchParam) => {
   var response;
@@ -11,7 +12,7 @@ export const fetchData = async (searchParam) => {
       num_pages: '1',
     },
     headers: {
-      'X-RapidAPI-Key': '5a3813a9b4msh2482a55bc044a22p1c0ee5jsn44ccb604a154',
+      'X-RapidAPI-Key': RAPID_API_KEY,
       'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
     },
   };
